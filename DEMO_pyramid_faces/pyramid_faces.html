@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="description" content="Description goes here" />
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>Exploded Faces Demo</title>
+</head>
+
+<style>
+
+  body {background-color: gray;}
+
+  svg {border: solid 1px black;}
+
+  #pyramid_svg_faces text {
+    font-family: "sans-serif";
+    fill: #f60;
+    font-size: 0.5rem;
+    font-weight: bold;
+  }
+
+  #pyramid_svg_faces_white { transform: translateY(8px); }
+  #pyramid_svg_faces_red { transform: translateY(-5px); }
+  #pyramid_svg_faces_green { transform: translateX(15px); }
+  #pyramid_svg_faces_blue { transform: translateX(-15px); }
+  
+  #pyramid_svg_faces > g { transition: 0.5s ease; }
+  #pyramid_svg_faces:hover > g { transform: translate(0);}
+
+
+</style>
+
+<body>
+
+<div>
+  <svg id="pyramid_svg_faces" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="280" height="280" viewBox="0 0 94.08 94.08">
+    <defs>
+      <text id="txt_1" x="17" y="67">1</text>
+      <text id="txt_2" x="73" y="71">2</text>
+      <text id="txt_3" x="31" y="85">3</text>
+      <text id="txt_4" x="40" y="13">4</text>
+      <circle id="circ_1" cx="23.66" cy="64.46" r="1.06"/>
+      <circle id="circ_2" cx="70.42" cy="68.20" r="1.06"/>
+      <circle id="circ_3" cx="33.99" cy="77.44" r="1.06"/>
+      <circle id="circ_4" cx="42.71" cy="16.64" r="1.06"/>
+    </defs>
+
+    <g id="pyramid_svg_faces_white">
+      <path fill="#c8c8c8" stroke="#000" stroke-linejoin="bevel" stroke-width=".33" d="m23.55 64.5 10.38 12.94 36.61-9.3z"/>
+      <use href="#circ_1" />
+      <use href="#txt_1" />
+      <use href="#circ_2" />
+      <use href="#txt_2" />
+      <use href="#circ_3" />
+      <use href="#txt_3" />
+    </g>
+    <g id="pyramid_svg_faces_red">
+      <path fill="#cf2338" stroke="#000" stroke-linejoin="bevel" stroke-width=".33" d="m42.71 16.64 27.71 51.56 -46.76 -3.74Z"/>
+      <use href="#circ_1" />
+      <use href="#txt_1" />
+      <use href="#circ_2" />
+      <use href="#txt_2" />
+      <use href="#circ_4" />
+      <use href="#txt_4" />
+    </g>
+    <g id="pyramid_svg_faces_blue">
+      <path fill="#33658a" stroke="#000" stroke-linejoin="bevel" stroke-width=".33" d="m23.55 64.5 10.35 13.09 8.89-61.14Z"/>
+      <use href="#circ_1" />
+      <use href="#txt_1" />
+      <use href="#circ_3" />
+      <use href="#txt_3" />
+      <use href="#circ_4" />
+      <use href="#txt_4" />
+
+    </g>
+    <g id="pyramid_svg_faces_green">
+      <path fill="#6a8e46" stroke="#000" stroke-linejoin="bevel" stroke-width=".33" d="m33.99 77.44 8.72 -60.8 27.71 51.56Z"/>
+      <use href="#circ_2" />
+      <use href="#txt_2" />
+      <use href="#circ_3" />
+      <use href="#txt_3" />
+      <use href="#circ_4" />
+      <use href="#txt_4" />
+    </g>
+  </svg>
+  
+
+</div>
+
+</body>
+</html>

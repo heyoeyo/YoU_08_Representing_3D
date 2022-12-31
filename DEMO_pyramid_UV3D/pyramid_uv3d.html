@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="description" content="Description goes here" />
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>Pyramid UV & 3D Render</title>
+</head>
+
+<style>
+  body { background-color: gray;}
+
+  #pyramid_uv3d_render {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    padding: 0 3rem;
+  }
+  
+  .pyramid_plot {
+    display: flex;
+    flex-flow: column nowrap;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .pyramid_plot canvas {
+    border: solid 1px black;
+    touch-action: none;
+  }
+
+  .pyramid_plot span {
+    text-align: center;
+    font-family: monospace;
+  }
+  
+  #pyramid_plot { background-color: hsl(0, 0%, 35%); }
+  #pyramid_3d { cursor: move; }
+
+</style>
+
+<body>
+
+  <section id="pyramid_uv3d_render">
+    <div class="pyramid_plot">
+      <canvas id="pyramid_uv"></canvas>
+      <span>UV Plot</span>
+    </div>
+
+    <div class="pyramid_plot">
+      <canvas id="pyramid_3d"></canvas>
+      <span>3D Plot</span>
+    </div>
+  </section>
+
+
+
+<script>
+
+  // -----------------------------------------------------------------------------------------------------------------
+  // Classes
+
+  class PlotUV {
+
+    // ...............................................................................................................
+
+    constructor(canvas_id, render_data) {
+
+      this.data = render_data;
+      this.canvas = document.getElementById(canvas_id);
+      this.ctx = this.canvas.getContext("2d");
+
+      // Set canvas to default size
+      this.set_size(100);
+    }
+
+    // ...............................................................................................................
+    
+    set_size = (canvas_size) => {
+      this.canvas.width = canvas_size;
+      this.canvas.height = canvas_size;
+      return this;
+    }
+
+    // ...............................................................................................................
+
+    render = () => {
+
+      // Update canvas sizing, if needed
+      resize_canvas(this.canvas);
+
+      // Draw UV faces
+      for (let i = 0; i < this.data.faces.length; i++) {
+        const face_idxs = this.data.faces[i];
+        const face_color = this.data.color[i];
+  
+        const uv_norm_list = face_idxs.map(idx => this.data.uv[idx]);
+        const uv_px_list = scale_01_to_px(this.ctx, uv_norm_list);
+        draw_polygon(this.ctx, uv_px_list);
+        fill_and_stroke(this.ctx, face_color);
+      }
+
+      // Draw UV vertices
+      const uv_px_list = scale_01_to_px(this.ctx, this.data.uv);
+      draw_vertices(this.ctx, uv_px_list, "black");
+
+      return;
+    }
+    
+    // ...............................................................................................................
+  }
+
+
+  // =================================================================================================================
+
+
+  class Plot3D {
+
+    // ...............................................................................................................
+
+    constructor(canvas_id, render_data) {
+
+      this.data = render_data;
+      this.canvas = document.getElementById(canvas_id);
+      this.ctx = this.canvas.getContext("2d");
+
+      // Set canvas to default size
+      this.set_size(100);
+
+      // Handle missing inputs
+      this._prev_x_norm = 0.5;
+      this._prev_y_norm = 0.5
+
+      // Set up interactions
+      this._is_clicked = false;
+      this.canvas.addEventListener("pointerdown", this._on_click);
+      this.canvas.addEventListener("pointerup", this._on_release);
+      this.canvas.addEventListener("pointercancel", this._on_release);
+      this.canvas.addEventListener("pointermove", this._on_move);
+    }
+
+    // ...............................................................................................................
+    
+    set_size = (canvas_size) => {
+      this.canvas.width = canvas_size;
+      this.canvas.height = canvas_size;
+      return this;
+    }
+
+    // ...............................................................................................................
+
+    _compute_clipspace_xyz = (h_angle_deg, v_angle_deg, scale) => {
+
+      // Compute transformed vertex locations for rendering
+      let clispace_xyzs = [];
+      let ax = 0;
+      let ay = 0;
+      for (let i = 0; i < this.data.xyz.length; i++) {
+        const orig_xyz = this.data.xyz[i];
+
+        // Compute orthographic 3D render positioning of vertices
+        let new_xyz = scale_vector(orig_xyz, scale);
+        new_xyz = rotate_y(new_xyz, h_angle_deg);
+        new_xyz = rotate_x(new_xyz, v_angle_deg);
+        clispace_xyzs[i] = new_xyz;
+
+        // Sum up the xys so we can average them to center the result
+        ax += new_xyz[0];
+        ay += new_xyz[1];
+      }
+
+      // Calculate average vertex x/y positions
+      ax = ax / this.data.xyz.length;
+      ay = ay / this.data.xyz.length;
+
+      // Shift all vertices so that they are centered in xy (y has extra bump for better aesthetics)
+      const extra_y_nudge = 0.05;
+      const x_off = 0.5 - ax;
+      const y_off = 0.5 - ay + extra_y_nudge;
+      clispace_xyzs = clispace_xyzs.map(([x,y,z]) => [x + x_off, y + y_off, z]);
+
+      return clispace_xyzs;
+    }
+
+    // ...............................................................................................................
+
+    _get_face_draw_order = (clispace_xyzs) => {
+  
+      // Calculate the 'average' z-position for each face, used for depth ordering when rendering
+      const face_depth_indexing = [];
+      for (let i = 0; i < this.data.faces.length; i++) {
+  
+        // Grab the all vertex xyzs for the given face
+        const face_idxs = this.data.faces[i];
+        const face_xyzs = face_idxs.map(idx => clispace_xyzs[idx]);
+  
+        // Average the vertex z values of the face, which will be used to provide depth sorting for rendering
+        const face_zs = face_xyzs.map(([x, y, z]) => z).flat();
+        const face_z_avg = sum(face_zs) / face_zs.length;
+        face_depth_indexing.push([i, face_z_avg]);
+      }
+  
+      // Sort face indices by depth (so we'll draw the furtherest faces first)
+      const ordered_depth_indexing = face_depth_indexing.sort(([i1, depth_1], [i2, depth_2]) => depth_1 - depth_2);
+      const face_order = ordered_depth_indexing.map(([idx, z_avg]) => idx);
+  
+      return face_order
+    }
+
+    // ...............................................................................................................
+    
+    render = (x_norm = null, y_norm = null) => {
+
+      // Update canvas sizing, if needed
+      resize_canvas(this.canvas);
+  
+      // Reset canvas, otherwise we get smearing
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      // Handle missing inputs
+      x_norm = (x_norm === null) ? this._prev_x_norm : x_norm;
+      y_norm = (y_norm === null) ? this._prev_y_norm : y_norm;
+      this._prev_x_norm = x_norm;
+      this._prev_y_norm = y_norm;
+  
+      // For clarity
+      const scale = 0.35;
+      const h_angle_deg = 180 * ((2 * x_norm) - 0.5);
+      const v_angle_deg = 45 * (2.0 * (1.0 - y_norm) - 0.5) - 25;
+  
+      // Get position & draw order for rendering
+      const clispace_xyzs = this._compute_clipspace_xyz(h_angle_deg, v_angle_deg, scale);
+      const face_order = this._get_face_draw_order(clispace_xyzs);
+
+      // Convert xyz in clipspace to xy pixels for rendering for all vertices
+      const vertex_xy_px_list = scale_01_to_px(this.ctx, clispace_xyzs);
+  
+      // Draw faces in order of furtherest to nearest depths, so we get proper overlapping
+      for (let i of face_order) {
+        const face_idxs = this.data.faces[i];
+        const face_color = this.data.color[i];
+
+        // Get all face vertices and draw as colored polygon
+        const xy_px_list = face_idxs.map(idx => vertex_xy_px_list[idx]);
+        draw_polygon(this.ctx, xy_px_list);
+        fill_and_stroke(this.ctx, face_color);
+
+        // Draw filled vertices, due to depth sorting, far verts will be covered by nearer faces
+        draw_vertices(this.ctx, xy_px_list, "black");
+      }
+      
+      // Draw stroke-only vertices, to give see-thru effect
+      draw_vertices(this.ctx, vertex_xy_px_list, null);
+
+      return;
+    }
+
+    // ...............................................................................................................
+
+    _on_render_event = (event) => {
+
+      const x_norm = event.offsetX / this.canvas.clientWidth;
+      const y_norm = event.offsetY / this.canvas.clientHeight;
+      this.render(x_norm, y_norm);
+    
+      return;
+    }
+    
+    // ...............................................................................................................
+
+    _on_click = (event) => {
+      this._is_clicked = true;
+      this._on_render_event(event);
+      this.canvas.setPointerCapture(event.pointerId);
+    }
+
+    // ...............................................................................................................
+
+    _on_release = (event) => {
+      this._is_clicked = false;
+      this.canvas.releasePointerCapture(event.pointerId);
+    }
+
+    // ...............................................................................................................
+
+    _on_move = (event) => {
+      if (this._is_clicked) this._on_render_event(event);
+    }
+
+    // ...............................................................................................................
+  }
+
+
+  // -----------------------------------------------------------------------------------------------------------------
+  // Constants
+
+  const TWO_PI = 2 * Math.PI;
+  const RADS_PER_DEG = Math.PI / 180;
+  const PYRAMID_JSON = {
+    xyz: [
+      [0.0,  0.0, -1.0],
+      [0.0,  2.0,  0.0],
+      [0.9,  0.0,  0.5],
+      [-0.9,  0.0,  0.5],
+      [0.0,  2.0,  0.0],
+      [0.0,  2.0,  0.0],
+    ],
+    uv: [
+      [0.3,  0.5],
+      [0.5,  0.2],
+      [0.7,  0.5],
+      [0.5,  0.8],
+      [0.9,  0.8],
+      [0.1,  0.8],
+    ],
+    faces: [
+      [0, 2, 3],
+      [0, 1, 2],
+      [2, 4, 3],
+      [3, 5, 0]
+    ],
+    color: [
+      "rgb(200, 200, 200)",
+      "rgb(208,  37,  54)",
+      "rgb(105, 143,  63)",
+      "rgb( 50, 100, 140)"
+    ]
+  }
+
+
+  // -----------------------------------------------------------------------------------------------------------------
+  // Rendering
+
+  const canvas_size = 300;
+  const render_uv = new PlotUV("pyramid_uv", PYRAMID_JSON).set_size(canvas_size);
+  const render_3d = new Plot3D("pyramid_3d", PYRAMID_JSON).set_size(canvas_size);
+  
+  // Initial renders, with 'nice' camera angle on 3d plot
+  render_uv.render();
+  render_3d.render(0.37, 0.65);
+  
+  // Set up resize observer, so images re-render when they shrink/enlarge
+  const obs = new ResizeObserver(() => {
+    render_uv.render();
+    render_3d.render();
+  });
+  const canvas_holder = document.getElementById("pyramid_uv3d_render");
+  obs.observe(canvas_holder);
+
+  
+  // -----------------------------------------------------------------------------------------------------------------
+  // Functions
+
+  // .................................................................................................................
+
+  function sum(array) {
+    return array.reduce((accumulator, next_value) => accumulator + next_value, 0);
+  }
+  
+  // .................................................................................................................
+
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  // .................................................................................................................
+
+  function rotate_x(xyz, angle_deg) {
+
+    const angle_rad = angle_deg * RADS_PER_DEG;
+    const cos_term = Math.cos(angle_rad);
+    const sin_term = Math.sin(angle_rad);
+
+    const [x, y, z] = xyz;
+    const new_x = x;
+    const new_y = y * cos_term + z * sin_term;
+    const new_z = z * cos_term - y * sin_term;;
+
+    return [new_x, new_y, new_z];
+  }
+
+  // .................................................................................................................
+
+  function rotate_y(xyz, angle_deg) {
+
+    const angle_rad = angle_deg * RADS_PER_DEG;
+    const cos_term = Math.cos(angle_rad);
+    const sin_term = Math.sin(angle_rad);
+
+    const [x, y, z] = xyz;
+    const new_x = x * cos_term + z * sin_term;
+    const new_y = y;
+    const new_z = z * cos_term - x * sin_term;
+
+    return [new_x, new_y, new_z];
+  }
+
+  // .................................................................................................................
+
+  function rotate_z(xyz, angle_deg) {
+    
+    const angle_rad = angle_deg * RADS_PER_DEG;
+    const cos_term = Math.cos(angle_rad);
+    const sin_term = Math.sin(angle_rad);
+
+    const [x, y, z] = xyz;
+    const new_x = x * cos_term + y * sin_term;
+    const new_y = y * cos_term - x * sin_term;
+    const new_z = z;
+
+    return [new_x, new_y, new_z];
+  }
+
+  // .................................................................................................................
+
+  function resize_canvas(canvas_elem) {
+
+    // For clarity
+    const display_width = canvas_elem.clientWidth;
+    const display_height = canvas_elem.clientHeight;
+
+    // Update canvas buffer size to match display size
+    const need_resize = (canvas_elem.width != display_width) || (canvas_elem.height != display_height);
+    if (need_resize) {
+      canvas_elem.width = display_width;
+      canvas_elem.height = display_height;
+    }
+
+    return need_resize;
+  }
+
+  // .................................................................................................................
+
+  function scale_vector(vec, scale) {
+    return vec.map(item => scale * item);
+  }
+
+  // .................................................................................................................
+
+  function draw_polygon(ctx, xy_px_list) {
+
+    /*
+    Draw a polygon using the given canvas context.
+    Assumes polygon vertices are given in pixel units (with origin in the top-left)
+    */
+
+    ctx.beginPath();
+    ctx.moveTo(...xy_px_list[0]);
+    for (const [x_px, y_px] of xy_px_list.slice(1)) {
+      ctx.lineTo(x_px, y_px);
+    }
+    ctx.closePath();
+
+    return;
+  }
+
+  // .................................................................................................................
+
+  function draw_vertices(ctx, vertex_xy_px_list, fill_style) {
+
+    /*
+    Draw a set of vertices using the given canvas context.
+    Assumes coordinates are given in pixel units (with origin in the top-left)
+    */
+
+    for (const [x_px, y_px] of vertex_xy_px_list) {
+
+      // Draw circle
+      ctx.beginPath();
+      ctx.arc(x_px, y_px, 3, 0, TWO_PI);
+
+      // Fill in circle if needed
+      const is_filled = (fill_style != null);
+      if (is_filled) {
+        ctx.fillStyle = fill_style;
+        ctx.fill();
+      }
+
+      // Stroke circle (with fill color, if provided)
+      ctx.strokeStyle = is_filled ? fill_style : "black";
+      ctx.stroke();
+    }
+
+    return;
+  }
+
+  // .................................................................................................................
+
+  function fill_and_stroke(ctx, fill_style, line_width = 1, stroke_style = "black") {
+
+    ctx.fillStyle = fill_style;
+    ctx.fill();
+
+    ctx.lineWidth = line_width;
+    ctx.strokeStyle = stroke_style;
+    ctx.stroke();
+
+    return;
+  }
+
+  // .................................................................................................................
+
+  function scale_01_to_px(ctx, xy_01_list) {
+
+    /*
+    Maps xy values in 0-to-1 range onto canvas pixel coordinates. Works with xyz inputs (z is ignored).
+    Assumes a bot-left origin for 01 values, but maps to integer pixel coords. using top-left origin
+    (i.e. flips the y-axis)
+    */
+    
+    const w_px = ctx.canvas.clientWidth;
+    const h_px = ctx.canvas.clientHeight;
+    return xy_01_list.map(([x_01, y_01]) => [Math.round(x_01 * w_px), Math.round((1 - y_01) * h_px)]); 
+  }
+
+  // .................................................................................................................
+
+</script>
+
+</body>
+</html>

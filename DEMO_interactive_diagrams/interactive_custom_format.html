@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="description" content="Description goes here" />
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="lib/style.css">
+  
+  <title>Interactive Custom 3D Model Format</title>
+</head>
+
+<body>
+
+  <div class="outer_container">
+    
+    <!-- Model representation as text -->
+    <aside id="cf_text_block" class="text_block">
+      <ul class="list_block">
+        <li id="cf_v1" class="li_1">Vertex 1:</li>
+        <li id="cf_v1xyz" class="li_2">XYZ: (0.0, 0.0, -1.0)</li>
+        <li id="cf_v1uv1" class="li_2">UV1: (0.3, 0.5)</li>
+      </ul>
+      <ul class="list_block">
+        <li id="cf_v2" class="li_1">Vertex 2:</li>
+        <li id="cf_v2xyz" class="li_2">XYZ: (0.9, 0.0, 0.5)</li>
+        <li id="cf_v2uv1" class="li_2">UV1: (0.7, 0.5)</li>
+      </ul>
+      <ul class="list_block">
+        <li id="cf_v3" class="li_1">Vertex 3:</li>
+        <li id="cf_v3xyz" class="li_2">XYZ: (-0.9, 0.0, 0.5)</li>
+        <li id="cf_v3uv1" class="li_2">UV1: ( 0.5, 0.8)</li>
+      </ul>
+      <ul class="list_block">
+        <li id="cf_v4" class="li_1">Vertex 4:</li>
+        <li id="cf_v4xyz" class="li_2">XYZ: (0.0, 2.0,  0.0)</li>
+        <li id="cf_v4uv1" class="li_2">UV1: (0.5, 0.2)</li>
+        <li id="cf_v4uv2" class="li_2">UV2: (0.9, 0.8)</li>
+        <li id="cf_v4uv3" class="li_2">UV3: (0.1, 0.8)</li>
+      </ul>
+      <ul class="list_block">
+        <li id="cf_f1" class="li_1">Face 1:</li>
+        <li id="cf_f1list" class="li_2">[(1,1), (2,1), (3,1)]</li>
+      </ul>
+      <ul class="list_block">
+        <li id="cf_f2" class="li_1">Face 2:</li>
+        <li id="cf_f2list" class="li_2">[(1,1), (4,1), (2,1)]</li>
+      </ul>
+      <ul class="list_block">
+        <li id="cf_f3" class="li_1">Face 3:</li>
+        <li id="cf_f3list" class="li_2">[(2,1), (4,2), (3,1)]</li>
+      </ul>
+      <ul class="list_block">
+        <li id="cf_f4" class="li_1">Face 4:</li>
+        <li id="cf_f4list" class="li_2">[(3,1), (4,3), (1,1)]</li>
+      </ul>
+    </aside>
+    
+    <div class="svg_column">
+
+      <!-- UV diagram -->
+      <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="280" height="280" viewBox="0 0 74.08 74.08">
+        <g id="cf_svg_uv">
+          <g stroke="#000" stroke-linejoin="bevel" stroke-width=".26">
+            <path id="cf_fuv1" fill="#c8c8c8" d="m29.49 44.41-12-20.79h24Z" transform="matrix(1.32 0 0 -1.15 -1.9 64.24)"/>
+            <path id="cf_fuv2" fill="#cf2338" d="m29.49 44.41-12-20.79h24Z" transform="matrix(1.32 0 0 1.15 -1.9 9.61)"/>
+            <path id="cf_fuv3" fill="#6a8e46" d="m29.49 44.41-12-20.79h24Z" transform="matrix(1.32 0 0 1.15 13.85 -14.02)"/>
+            <path id="cf_fuv4" fill="#33658a" d="m29.49 44.41-12-20.79h24Z" transform="matrix(1.32 0 0 1.15 -17.65 -14.02)"/>
+          </g>
+          <circle id="cf_vuv41" cx="37.04" cy="60.85" r="1.06"/>
+          <circle id="cf_vuv21" cx="52.92" cy="37.04" r="1.06"/>
+          <circle id="cf_vuv11" cx="21.17" cy="37.04" r="1.06"/>
+          <circle id="cf_vuv42" cx="68.79" cy="13.23" r="1.06"/>
+          <circle id="cf_vuv31" cx="37.04" cy="13.23" r="1.06"/>
+          <circle id="cf_vuv43" cx="5.29" cy="13.23" r="1.06"/>
+        </g>
+        
+        <!-- Empty elements, used to create highlighted vertices/faces -->
+        <g id="cf_svg_uv_hl" stroke="#000" stroke-linejoin="bevel" stroke-width="1">
+          <use href="#" />
+          <use href="#" />
+          <use href="#" />
+          <use href="#" />
+        </g>
+  
+        <text x="55" y="55" font-size="0.4rem" font-family="monospace">UV</text>
+      </svg>
+  
+      <!-- 3D diagram -->
+      <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="280" height="280" viewBox="0 0 74.08 74.08">
+        <g id="cf_svg_xyz">
+          <g stroke-width="0.33" stroke="#000" stroke-linejoin="bevel">
+            <path id="cf_fxyz1" fill="#c8c8c8" d="m13.55 54.5 10.38 12.94 36.61-9.3z"/>
+            <path id="cf_fxyz2" fill="#cf2338" d="M60.54 58.14 13.55 54.5 32.68 6.52z"/>
+            <path id="cf_fxyz3" fill="#6a8e46" d="m23.93 67.44 8.75-60.92 27.86 51.62Z"/>
+            <path id="cf_fxyz4" fill="#33658a" d="M13.55 54.5 23.9 67.59l8.89-61.14z"/>
+          </g>
+          <circle id="cf_vxyz2" cx="60.42" cy="58.2" r="1.06"/>
+          <circle id="cf_vxyz3" cx="23.99" cy="67.44" r="1.06"/>
+          <circle id="cf_vxyz1" cx="13.66" cy="54.46" r="1.06"/>
+          <circle id="cf_vxyz4" cx="32.71" cy="6.64" r="1.06"/>
+        </g>
+  
+        <!-- Empty elements, used to create highlighted vertices/faces -->
+        <g id="cf_svg_xyz_hl" stroke="#000" stroke-linejoin="bevel" stroke-width="1">
+          <use href="#" />
+          <use href="#" />
+          <use href="#" />
+          <use href="#" />
+        </g>
+  
+        <text x="55" y="15" font-size="0.4rem" font-family="monospace">3D</text>
+      </svg>
+    </div>
+  
+  </div>
+  
+<script src="lib/interactive_format_lib.js"></script>
+<script>
+
+
+  // Mapping of convenient keys to DOM ids, for SVG elements on text block
+  const TXTIDS = {
+    v1: "cf_v1",
+    v1xyz: "cf_v1xyz",
+    v1uv1: "cf_v1uv1",
+    v2: "cf_v2",
+    v2xyz: "cf_v2xyz",
+    v2uv1: "cf_v2uv1",
+    v3: "cf_v3",
+    v3xyz: "cf_v3xyz",
+    v3uv1: "cf_v3uv1",
+    v4: "cf_v4",
+    v4xyz: "cf_v4xyz",
+    v4uv1: "cf_v4uv1",
+    v4uv2: "cf_v4uv2",
+    v4uv3: "cf_v4uv3",
+    f1: "cf_f1",
+    f1vs: "cf_f1list",
+    f2: "cf_f2",
+    f2vs: "cf_f2list",
+    f3: "cf_f3",
+    f3vs: "cf_f3list",
+    f4: "cf_f4",
+    f4vs: "cf_f4list"
+  }
+
+  // Mapping of convenient keys to DOM ids, for SVG elements on UV diagram
+  const UVIDS = {
+    v11: "cf_vuv11",
+    v21: "cf_vuv21",
+    v31: "cf_vuv31",
+    v41: "cf_vuv41",
+    v42: "cf_vuv42",
+    v43: "cf_vuv43",
+    f1: "cf_fuv1",
+    f2: "cf_fuv2",
+    f3: "cf_fuv3",
+    f4: "cf_fuv4"
+  }
+
+  // Mapping of convenient keys to DOM ids, for SVG elements on 3D diagram
+  const XYZIDS = {
+    v1: "cf_vxyz1",
+    v2: "cf_vxyz2",
+    v3: "cf_vxyz3",
+    v4: "cf_vxyz4",
+    f1: "cf_fxyz1",
+    f2: "cf_fxyz2",
+    f3: "cf_fxyz3",
+    f4: "cf_fxyz4"
+  }  
+
+  // Create helper for managing interactive text block
+  const itext = new InteractiveTextListing("cf_text_block", "cf_svg_uv", "cf_svg_xyz");
+
+  // Highlight 'Vertex #:' entries
+  itext
+    .assign_svg_highlights(TXTIDS.v1, UVIDS.v11, XYZIDS.v1)
+    .assign_svg_highlights(TXTIDS.v2, UVIDS.v21, XYZIDS.v2)
+    .assign_svg_highlights(TXTIDS.v3, UVIDS.v31, XYZIDS.v3)
+    .assign_svg_highlights(TXTIDS.v4, [UVIDS.v41, UVIDS.v42, UVIDS.v43], XYZIDS.v4);
+
+  // Highlight 'Face #:' entries
+  itext
+    .assign_svg_highlights(TXTIDS.f1, UVIDS.f1, XYZIDS.f1)
+    .assign_svg_highlights(TXTIDS.f2, UVIDS.f2, XYZIDS.f2)
+    .assign_svg_highlights(TXTIDS.f3, UVIDS.f3, XYZIDS.f3)
+    .assign_svg_highlights(TXTIDS.f4, UVIDS.f4, XYZIDS.f4);
+  
+  // Highlight 'XYZ:' entries
+  itext
+    .assign_svg_highlights(TXTIDS.v1xyz, [], XYZIDS.v1)
+    .assign_svg_highlights(TXTIDS.v2xyz, [], XYZIDS.v2)
+    .assign_svg_highlights(TXTIDS.v3xyz, [], XYZIDS.v3)
+    .assign_svg_highlights(TXTIDS.v4xyz, [], XYZIDS.v4);
+
+  // Highlight 'UV#:' entries
+  itext
+    .assign_svg_highlights(TXTIDS.v1uv1, UVIDS.v11, [])
+    .assign_svg_highlights(TXTIDS.v2uv1, UVIDS.v21, [])
+    .assign_svg_highlights(TXTIDS.v3uv1, UVIDS.v31, [])
+    .assign_svg_highlights(TXTIDS.v4uv1, UVIDS.v41, [])
+    .assign_svg_highlights(TXTIDS.v4uv2, UVIDS.v42, [])
+    .assign_svg_highlights(TXTIDS.v4uv3, UVIDS.v43, []);
+
+  // Highlight vertices for each of the face listings (e.g. "[(1,1), (2,1), (3,1)]")
+  itext
+    .assign_svg_highlights(TXTIDS.f1vs, [UVIDS.v11, UVIDS.v21, UVIDS.v31], [XYZIDS.v1, XYZIDS.v2, XYZIDS.v3])
+    .assign_svg_highlights(TXTIDS.f2vs, [UVIDS.v11, UVIDS.v41, UVIDS.v21], [XYZIDS.v1, XYZIDS.v4, XYZIDS.v2])
+    .assign_svg_highlights(TXTIDS.f3vs, [UVIDS.v21, UVIDS.v42, UVIDS.v31], [XYZIDS.v2, XYZIDS.v4, XYZIDS.v3])
+    .assign_svg_highlights(TXTIDS.f4vs, [UVIDS.v31, UVIDS.v43, UVIDS.v11], [XYZIDS.v3, XYZIDS.v4, XYZIDS.v1]);
+
+  // Also highlight associated TEXT entries for each of the face listings
+  // (e.g. "[(1,1), (2,1), (3,1)]" highlights V1 XYZ + V1 UV1, V2 XYZ + V2 UV1, V3 XYZ + V3 UV1)
+  itext
+    .assign_text_highlights(TXTIDS.f1vs,
+      [TXTIDS.v1xyz, TXTIDS.v2xyz, TXTIDS.v3xyz, TXTIDS.v1uv1, TXTIDS.v2uv1, TXTIDS.v3uv1])
+    .assign_text_highlights(TXTIDS.f2vs,
+      [TXTIDS.v1xyz, TXTIDS.v4xyz, TXTIDS.v2xyz, TXTIDS.v1uv1, TXTIDS.v4uv1, TXTIDS.v2uv1])
+    .assign_text_highlights(TXTIDS.f3vs,
+      [TXTIDS.v2xyz, TXTIDS.v4xyz, TXTIDS.v3xyz, TXTIDS.v2uv1, TXTIDS.v4uv2, TXTIDS.v3uv1])
+    .assign_text_highlights(TXTIDS.f4vs,
+      [TXTIDS.v3xyz, TXTIDS.v4xyz, TXTIDS.v1xyz, TXTIDS.v3uv1, TXTIDS.v4uv3, TXTIDS.v1uv1]);
+  
+</script>
+
+</body>
+</html>

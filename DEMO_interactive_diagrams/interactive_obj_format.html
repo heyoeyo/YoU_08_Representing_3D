@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="description" content="Description goes here" />
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="lib/style.css">
+  
+  <title>Interactive .OBJ 3D Model Format</title>
+</head>
+
+<body>    
+    
+  <div class="outer_container">
+    
+    <!-- Model representation as text -->
+    <aside id="of_text_block" class="text_block">
+      <ul class="list_block">
+        <li id="of_xyzs" class="li_1">XYZs:</li>
+        <li id="of_xyz1" class="li_2">( 0.0, 0.0,-1.0)</li>
+        <li id="of_xyz2" class="li_2">( 0.9, 0.0, 0.5)</li>
+        <li id="of_xyz3" class="li_2">(-0.9, 0.0, 0.5)</li>
+        <li id="of_xyz4" class="li_2">( 0.0, 2.0, 0.0)</li>
+      </ul>
+      <ul class="list_block">
+        <li id="of_uvs" class="li_1">UVs:</li>
+        <li id="of_uv1" class="li_2">(0.3, 0.5)</li>
+        <li id="of_uv2" class="li_2">(0.7, 0.5)</li>
+        <li id="of_uv3" class="li_2">(0.5, 0.8)</li>
+        <li id="of_uv4" class="li_2">(0.5, 0.2)</li>
+        <li id="of_uv5" class="li_2">(0.9, 0.8)</li>
+        <li id="of_uv6" class="li_2">(0.1, 0.8)</li>
+      </ul>
+      <ul class="list_block">
+        <li id="of_fs" class="li_1">Faces:</li>
+        <li id="of_f1" class="li_2">[(1,1), (2,2), (3,3)]</li>
+        <li id="of_f2" class="li_2">[(1,1), (4,4), (2,2)]</li>
+        <li id="of_f3" class="li_2">[(2,2), (4,5), (3,3)]</li>
+        <li id="of_f4" class="li_2">[(3,3), (4,6), (1,1)]</li>
+      </ul>
+    </aside>
+    
+    <div class="svg_column">
+
+      <!-- UV diagram -->
+      <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="280" height="280" viewBox="0 0 74.08 74.08">
+        <g id="of_svg_uv">
+          <g stroke="#000" stroke-linejoin="bevel" stroke-width=".26">
+            <path id="of_fuv1" fill="#c8c8c8" d="m29.49 44.41-12-20.79h24Z" transform="matrix(1.32 0 0 -1.15 -1.9 64.24)"/>
+            <path id="of_fuv2" fill="#cf2338" d="m29.49 44.41-12-20.79h24Z" transform="matrix(1.32 0 0 1.15 -1.9 9.61)"/>
+            <path id="of_fuv3" fill="#6a8e46" d="m29.49 44.41-12-20.79h24Z" transform="matrix(1.32 0 0 1.15 13.85 -14.02)"/>
+            <path id="of_fuv4" fill="#33658a" d="m29.49 44.41-12-20.79h24Z" transform="matrix(1.32 0 0 1.15 -17.65 -14.02)"/>
+          </g>
+          <circle id="of_vuv1" cx="21.17" cy="37.04" r="1.06"/>
+          <circle id="of_vuv2" cx="52.92" cy="37.04" r="1.06"/>
+          <circle id="of_vuv3" cx="37.04" cy="13.23" r="1.06"/>
+          <circle id="of_vuv4" cx="37.04" cy="60.85" r="1.06"/>
+          <circle id="of_vuv5" cx="68.79" cy="13.23" r="1.06"/>
+          <circle id="of_vuv6" cx="5.29" cy="13.23" r="1.06"/>
+        </g>
+        
+        <!-- Empty elements, used to create highlighted vertices/faces -->
+        <g id="of_svg_uv_hl" stroke="#000" stroke-linejoin="bevel" stroke-width="1">
+          <use href="#" />
+          <use href="#" />
+          <use href="#" />
+          <use href="#" />
+          <use href="#" />
+          <use href="#" />
+        </g>
+  
+        <text x="55" y="55" font-size="0.4rem" font-family="monospace">UV</text>
+      </svg>
+  
+      <!-- 3D diagram -->
+      <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="280" height="280" viewBox="0 0 74.08 74.08">
+        <g id="of_svg_xyz">
+          <g stroke-width="0.33" stroke="#000" stroke-linejoin="bevel">
+            <path id="of_fxyz1" fill="#c8c8c8" d="m13.55 54.5 10.38 12.94 36.61-9.3z"/>
+            <path id="of_fxyz2" fill="#cf2338" d="M60.54 58.14 13.55 54.5 32.68 6.52z"/>
+            <path id="of_fxyz3" fill="#6a8e46" d="m23.93 67.44 8.75-60.92 27.86 51.62Z"/>
+            <path id="of_fxyz4" fill="#33658a" d="M13.55 54.5 23.9 67.59l8.89-61.14z"/>
+          </g>
+          <circle id="of_vxyz2" cx="60.42" cy="58.2" r="1.06"/>
+          <circle id="of_vxyz3" cx="23.99" cy="67.44" r="1.06"/>
+          <circle id="of_vxyz1" cx="13.66" cy="54.46" r="1.06"/>
+          <circle id="of_vxyz4" cx="32.71" cy="6.64" r="1.06"/>
+        </g>
+  
+        <!-- Empty elements, used to create highlighted vertices/faces -->
+        <g id="of_svg_xyz_hl" stroke="#000" stroke-linejoin="bevel" stroke-width="1">
+          <use href="#" />
+          <use href="#" />
+          <use href="#" />
+          <use href="#" />
+          <use href="#" />
+          <use href="#" />
+        </g>
+  
+        <text x="55" y="15" font-size="0.4rem" font-family="monospace">3D</text>
+      </svg>
+    </div>
+  
+  </div>
+  
+
+<script src="lib/interactive_format_lib.js"></script>
+<script>
+
+  // Mapping of convenient keys to DOM ids, for SVG elements on text block
+  const TXTIDS = {
+    xyz_title: "of_xyzs",
+    xyz1: "of_xyz1",
+    xyz2: "of_xyz2",
+    xyz3: "of_xyz3",
+    xyz4: "of_xyz4",
+    uv_title: "of_uvs",
+    uv1: "of_uv1",
+    uv2: "of_uv2",
+    uv3: "of_uv3",
+    uv4: "of_uv4",
+    uv5: "of_uv5",
+    uv6: "of_uv6",
+    face_title: "of_fs",
+    f1: "of_f1",
+    f2: "of_f2",
+    f3: "of_f3",
+    f4: "of_f4"
+  }
+
+  // Mapping of convenient keys to DOM ids, for SVG elements on UV diagram
+  const UVIDS = {
+    v1: "of_vuv1",
+    v2: "of_vuv2",
+    v3: "of_vuv3",
+    v4: "of_vuv4",
+    v5: "of_vuv5",
+    v6: "of_vuv6",
+    f1: "of_fuv1",
+    f2: "of_fuv2",
+    f3: "of_fuv3",
+    f4: "of_fuv4"
+  }
+
+  // Mapping of convenient keys to DOM ids, for SVG elements on 3D diagram
+  const XYZIDS = {
+    v1: "of_vxyz1",
+    v2: "of_vxyz2",
+    v3: "of_vxyz3",
+    v4: "of_vxyz4",
+    f1: "of_fxyz1",
+    f2: "of_fxyz2",
+    f3: "of_fxyz3",
+    f4: "of_fxyz4"
+  }
+  
+  // Create helper for managing interactive text block
+  const itext = new InteractiveTextListing("of_text_block", "of_svg_uv", "of_svg_xyz");
+
+  // Highlight XYZ entries
+  itext
+    .assign_svg_highlights(TXTIDS.xyz1, [], XYZIDS.v1)
+    .assign_svg_highlights(TXTIDS.xyz2, [], XYZIDS.v2)
+    .assign_svg_highlights(TXTIDS.xyz3, [], XYZIDS.v3)
+    .assign_svg_highlights(TXTIDS.xyz4, [], XYZIDS.v4);
+
+  // Highlight UV entries
+  itext
+    .assign_svg_highlights(TXTIDS.uv1, UVIDS.v1, [])
+    .assign_svg_highlights(TXTIDS.uv2, UVIDS.v2, [])
+    .assign_svg_highlights(TXTIDS.uv3, UVIDS.v3, [])
+    .assign_svg_highlights(TXTIDS.uv4, UVIDS.v4, [])
+    .assign_svg_highlights(TXTIDS.uv5, UVIDS.v5, [])
+    .assign_svg_highlights(TXTIDS.uv6, UVIDS.v6, []);
+
+  // Highlight everything associated with title text
+  itext
+    .assign_svg_highlights(TXTIDS.xyz_title, [], [XYZIDS.v1, XYZIDS.v2, XYZIDS.v3, XYZIDS.v4])
+    .assign_svg_highlights(TXTIDS.uv_title, [UVIDS.v1, UVIDS.v2, UVIDS.v3, UVIDS.v4, UVIDS.v5, UVIDS.v6], [])
+    .assign_svg_highlights(TXTIDS.face_title, [UVIDS.f1, UVIDS.f2, UVIDS.f3, UVIDS.f4], [XYZIDS.f1, XYZIDS.f2, XYZIDS.f3, XYZIDS.f4])
+
+  // Highlight vertices associated with face listings
+  itext
+    .assign_svg_highlights(TXTIDS.f1, [UVIDS.v1, UVIDS.v2, UVIDS.v3], [XYZIDS.v1, XYZIDS.v2, XYZIDS.v3])
+    .assign_svg_highlights(TXTIDS.f2, [UVIDS.v1, UVIDS.v4, UVIDS.v2], [XYZIDS.v1, XYZIDS.v4, XYZIDS.v2])
+    .assign_svg_highlights(TXTIDS.f3, [UVIDS.v2, UVIDS.v5, UVIDS.v3], [XYZIDS.v2, XYZIDS.v4, XYZIDS.v3])
+    .assign_svg_highlights(TXTIDS.f4, [UVIDS.v3, UVIDS.v6, UVIDS.v1], [XYZIDS.v3, XYZIDS.v4, XYZIDS.v1]);
+  
+  // Highlight TEXT entries associated with face listings
+  itext
+    .assign_text_highlights(TXTIDS.f1, [TXTIDS.xyz1, TXTIDS.xyz2, TXTIDS.xyz3, TXTIDS.uv1, TXTIDS.uv2, TXTIDS.uv3])
+    .assign_text_highlights(TXTIDS.f2, [TXTIDS.xyz1, TXTIDS.xyz4, TXTIDS.xyz2, TXTIDS.uv1, TXTIDS.uv4, TXTIDS.uv2])
+    .assign_text_highlights(TXTIDS.f3, [TXTIDS.xyz2, TXTIDS.xyz4, TXTIDS.xyz3, TXTIDS.uv2, TXTIDS.uv5, TXTIDS.uv3])
+    .assign_text_highlights(TXTIDS.f4, [TXTIDS.xyz3, TXTIDS.xyz4, TXTIDS.xyz1, TXTIDS.uv3, TXTIDS.uv6, TXTIDS.uv1]);
+
+</script>
+
+</body>
+</html>

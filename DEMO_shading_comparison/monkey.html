@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="description" content="Description goes here" />
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- <link rel="stylesheet" href="styles.css"> -->
+  
+  <title>Shading Comparison</title>
+</head>
+
+<body>
+
+  <style>
+
+  * { box-sizing: border-box; }
+
+  body { background-color: gray; }
+  .hidden { display:none; }
+
+
+  #shading_demo_container {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #shading_img_container {
+    display: grid;
+    grid-template-areas: "image";
+    user-select: none;
+    cursor: ew-resize;
+    touch-action: none;
+  }
+
+  .shading_content { grid-area: image; }
+
+  #shading_img_container img {
+    width: 100%;
+    height: auto;
+  }
+
+
+  #shading_img_container > svg {
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    stroke: hsl(0, 0%, 25%);
+    stroke-width: 1px;
+  }
+
+  
+  #shading_overlay {
+    pointer-events: none;
+    clip-path: inset(0 50% 0 0);
+  }
+
+  #shading_toggle_container {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+  }
+
+  #shading_toggle_container > * {
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    user-select: none;
+    font-family: monospace;
+  }
+
+  #shading_toggle_container > label {
+    font-size: 1rem;
+    padding-right: 0.25rem;
+    text-align: center;
+  }
+
+  #shading_toggle_checkbox {
+    --size: 1.5rem;
+    width: var(--size);
+    height: var(--size);
+  }
+
+  </style>
+
+  <div id="shading_demo_container">
+    <figure id="shading_img_container" title="Quads vs. Triangles - Drag the slider to compare images">
+
+      <div id="shading_underlay" class="shading_content">
+        <img src="images/flat_tri.webp" draggable="false" >
+        <img src="images/smooth_tri.webp" draggable="false" class="hidden" />
+      </div>
+      
+      <div id="shading_overlay" class="shading_content">
+        <img src="images/flat_quad.webp" draggable="false" />
+        <img src="images/smooth_quad.webp" draggable="false" class="hidden" />
+      </div>
+
+      <svg class="shading_content" height="10px">
+        <line id="shading_overlay_line" x1="50%" y1="0" x2="50%" y2="100%"></line>
+      </svg>
+    </figure>
+
+    <div id="shading_toggle_container">
+      <label for="shading_toggle_checkbox">Smooth Shading</label>
+      <input id="shading_toggle_checkbox" type="checkbox" />
+    </div>
+  </div>
+  
+
+<script>
+
+  class ShadingCompare {
+
+    // ...............................................................................................................
+
+    constructor() {
+
+      // Set up internal state flag
+      this.is_clicked = false;
+
+      // Hard-code DOM references
+      this.container = document.getElementById("shading_img_container");
+      this.underlay = document.getElementById("shading_underlay");
+      this.overlay = document.getElementById("shading_overlay");
+      this.overlay_line_group = document.getElementById("shading_overlay_line_group");
+      this.overlay_line = document.getElementById("shading_overlay_line");
+      this.toggle_btn = document.getElementById("shading_toggle_checkbox");
+
+      // Add listeners
+      this.container.addEventListener("pointerdown", this._on_click, false);
+      this.container.addEventListener("pointerup", this._on_release);
+      this.container.addEventListener("pointercancel", this._on_release);
+      this.container.addEventListener("pointermove", this._on_move);
+      this.toggle_btn.addEventListener("click", this._on_toggle);
+    }
+
+    // ...............................................................................................................
+
+    _update_overlay = (event) => {
+      
+      /* Update the masking + indicator line for image comparison overlay */
+
+      // Get point click location relative to container as a percentage
+      const w_pct = clamp(Math.round(100 * event.offsetX / this.container.offsetWidth), 0, 100);
+      const inset_w_pct = 100 - w_pct;
+
+      // Update image masking to hide part of overlay based on pointer location
+      this.underlay.style.clipPath = `inset(0 0 0 ${w_pct}%)`;
+      this.overlay.style.clipPath = `inset(0 ${100 - w_pct}% 0 0)`;
+      
+      // Update line to indicate comparison edge
+      const pct_str = `${w_pct}%`;
+      this.overlay_line.setAttribute("x1", pct_str);
+      this.overlay_line.setAttribute("x2", pct_str);
+
+      return;
+    }
+
+    // ...............................................................................................................
+
+    _on_click = (event) => {
+      this.is_clicked = true;
+      this._update_overlay(event);
+      this.container.setPointerCapture(event.pointerId);
+    }
+
+    // ...............................................................................................................
+
+    _on_release = (event) => {
+      this.is_clicked = false;
+      this.container.releasePointerCapture(event.pointerId);
+    }
+
+    // ...............................................................................................................
+
+    _on_move = (event) => {
+      if (this.is_clicked) this._update_overlay(event);
+    }
+
+    // ...............................................................................................................
+
+    _on_toggle = (event) => {
+
+      // Toggle the 'hidden' class on/off for each image inside the container
+      const all_images = this.container.querySelectorAll("img");
+      for (const img of all_images) {
+        const is_hidden = img.classList.contains("hidden");
+        img.classList.remove("hidden");
+        if (!is_hidden) img.classList.add("hidden");
+      }
+
+      return;
+    }
+
+    // ...............................................................................................................
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  const shade_compare = new ShadingCompare();
+
+</script>
+
+</body>
+</html>
